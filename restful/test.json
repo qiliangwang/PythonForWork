@@ -1,0 +1,34 @@
+{
+   "router": {
+       "index": 'Home',
+       "404": "404",
+       "home": "home",
+       "dinnerUserList": '员工信息',
+       "dinnerUserForm": '员工信息编辑',
+       "dinnerUserBatchForm": '员工信息导入',
+       "dinnerRecordList": '订餐',
+       "dinnerEatList": '本周用餐情况',
+       "dinnerEatDetail": '用餐明细',
+       "dinnerEatBatchForm": '用餐人员数据导入',
+       "dinnerMenuList": '下周菜单更新',
+       "dinnerMenuBatchForm": '菜单更新编辑',
+       "dinnerVoteList": '投票管理',
+       "dinnerVoteForm": '添加投票',
+       "dinnerVoteFoodBatchForm": '导入投票菜单明细',
+       "dinnerVoteFoodReportList": '投票统计',
+       "dinnerVoteRecordList": '菜单投票',
+       "dinnerVoteRecordForm": '菜单投票编辑',
+       "opinionList": '意见反馈',
+       "opinionForm": '意见反馈编辑',
+       "opinionDetail": '意见反馈详细',
+       "welfarePurchaseList": '福利购机',
+       "welfarePurchaseForm": '福利新增',
+       "welfarePurchaseDetail": '福利详情',
+       "welfareIntegralList": '积分管理',
+       "welfareIntegralDetail": '积分详情',
+       "welfareIntegralForm": '积分修改',
+       "welfarePolicyList": '政策管理',
+       "welfarePolicyEdit": '政策编辑'
+
+    }
+}
