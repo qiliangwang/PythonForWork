@@ -349,7 +349,8 @@ def init_translate(group_name, items):
 
             cursor.execute(translate_sql)
 
-    # db.commit()
+    db.commit()
+
     db.close()
 
 
