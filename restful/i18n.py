@@ -65,10 +65,11 @@ def process_page(project_name):
     find_all_json(page_path, data)
     print(len(data), page_path.split('/')[0], data)
     data = [d for d in data if not 'pcas.json' in d]
-    init_group(project_name, data)
+    # init_group(project_name, data)
     for group in data:
         items = parse_page_file(group)
-        init_item_translate(group, items)
+        # init_item(group, items)
+        init_translate(group, items)
 
 
 def find_all_json(base_path, results):
@@ -182,11 +183,9 @@ def init_group(project_name, groups):
     db.close()
 
 
-def init_item_translate(group_name, items):
+def init_item(group_name, items):
     """
     group_name -> group_id -> insert(group_id, item) into item table
-
-    -> select item_id -> insert(translate_id, value) into translate table
     :param group_name:
     :param items:
     :return:
@@ -229,14 +228,93 @@ def init_item_translate(group_name, items):
 
     group_id = cursor.fetchone()[0]
 
+    print('group_id', group_id)
+
+    for item in items:
+        info = str(item[0]).split('--')
+        name = info[1]
+        sql = "INSERT INTO i18n_item(name ,group_id) VALUES ('%s', '%s')" % (name, group_id)
+        print('insert item sql : ', sql)
+        cursor.execute(sql)
+
+    db.commit()
+
     # for item in items:
     #     info = str(item[0]).split('--')
+    #
     #     name = info[1]
-    #     sql = "INSERT INTO i18n_item(name ,group_id) VALUES ('%s', '%s')" % (name, group_id)
+    #     language = info[0]
+    #     value = item[1]
+    #     value = str(value).replace('）', '').replace('（', '').replace('/', '').replace('，', '').replace("'", '')
     #
-    #     cursor.execute(sql)
+    #     if language == 'id':
+    #         language_id = 2
+    #     else:
+    #         language_id = 1
     #
+    #     select_item = "select id from i18n_item where name = '%s'" % name
+    #
+    #     cursor.execute(select_item)
+    #
+    #     item_id = cursor.fetchone()[0]
+    #
+    #     translate_sql = "INSERT INTO i18n_translate(item_id ,language_id, value) VALUES ('%s', '%s', '%s')" % (item_id, language_id, value)
+    #
+    #     print(translate_sql)
+
+        # cursor.execute(translate_sql)
+
     # db.commit()
+    db.close()
+
+
+def init_translate(group_name, items):
+    """
+    -> select item_id -> insert(translate_id, value) into translate table
+    :param group_name:
+    :param items:
+    :return:
+    """
+    '''
+    ui-web-rearservices/src/page/opinion/opinion.json 
+
+    [('id--opinionUser', 'opinionUser'), 
+    ('id--content', 'content'), 
+    ('id--departmentName', 'departmentName'), 
+    ('id--type', 'type'), 
+    ('id--recordDate', 'recordDate'), 
+    ('id--viewDetail', 'viewDetail'), 
+    ('id--pictureUpload', 'pictureUpload'), 
+    ('zhCn--opinionUser', '意见人'), 
+    ('zhCn--content', '意见内容'), 
+    ('zhCn--departmentName', '部门'), 
+    ('zhCn--type', '所属分类'), 
+    ('zhCn--recordDate', '提出时间'), 
+    ('zhCn--viewDetail', '查看详细'), 
+    ('zhCn--pictureUpload', '相关图片')]
+    '''
+
+    conn_params = {
+        'host': '192.168.33.206',
+        'user': 'dev',
+        'passwd': 'lvyue@123456',
+        'port': 3326,
+        'db': 'i18n',
+    }
+
+    db = pymysql.connect(**conn_params)
+
+    cursor = db.cursor()
+
+    group_name = group_name.split('/')[-1].replace('.json', '')
+
+    select_group = "select id from i18n_group where name = '%s'" % group_name
+
+    cursor.execute(select_group)
+
+    group_id = cursor.fetchone()[0]
+
+    print('group_id', group_id)
 
     for item in items:
         info = str(item[0]).split('--')
@@ -251,19 +329,27 @@ def init_item_translate(group_name, items):
         else:
             language_id = 1
 
-        select_item = "select id from i18n_item where name = '%s'" % name
+        select_item = "select id from i18n_item where name = '%s' and group_id = '%s' " % (name, group_id)
+
+        print(select_item)
 
         cursor.execute(select_item)
 
-        item_id = cursor.fetchone()[0]
+        item_row = cursor.fetchone()
 
-        translate_sql = "INSERT INTO i18n_translate(item_id ,language_id, value) VALUES ('%s', '%s', '%s')" % (item_id, language_id, value)
+        if item_row is not None:
 
-        print(translate_sql)
+            item_id = item_row[0]
 
-        cursor.execute(translate_sql)
+            print(name, 'id is', item_id)
 
-    db.commit()
+            translate_sql = "INSERT INTO i18n_translate(item_id ,language_id, value) VALUES ('%s', '%s', '%s')" % ( item_id, language_id, value)
+
+            print(translate_sql)
+
+            cursor.execute(translate_sql)
+
+    # db.commit()
     db.close()
 
 
